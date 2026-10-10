@@ -1,5 +1,5 @@
-name = Measure & Plan
-description = Measure distances and create lines, rectangles, circles, and hexagons. [UI - .]
+name = Simple Measure
+description = Measure distances between two objects. Use M to set both point and N to remove the points.
 author = moose man
 tags = Tool
 version = 2
