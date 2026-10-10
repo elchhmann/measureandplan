@@ -1,13 +1,15 @@
+#version 2
+
 ---@diagnostic disable : undefined-global
 ---@diagnostic disable : lowercase-global
 
 maxDist = 1000
 
-function init()
+function client.init()
     -- DebugPrint("init2")
 end
 
-function tick() -- Measurement math etc
+function client.tick() -- Measurement math etc
     origin = GetCameraTransform().pos -- Position of the camera
     cameraDirection = TransformToParentVec(GetCameraTransform(), Vec(0, 0, -1)) -- Direction the camera is facing
     raycast, dist = QueryRaycast(origin, cameraDirection, maxDist) -- Raycast from the camera
@@ -48,7 +50,7 @@ function tick() -- Measurement math etc
     -- direction = Vecnormalize(VecSub(b, a))
 end
 
-function draw() -- Rendering
+function client.draw() -- Rendering
     if aSet and dist < maxDist then
         UiPush()
             UiFont("bold.ttf", 24)
