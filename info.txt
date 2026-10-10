@@ -1,0 +1,5 @@
+name = Measure & Plan
+description = Measure distances and create lines, rectangles, circles, and hexagons. [UI - .]
+author = moose man
+tags = Tool
+version = 2
