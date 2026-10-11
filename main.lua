@@ -64,19 +64,26 @@ function client.tick() -- Measurement math etc
             -- DebugPrint("New measurement created")
         end
 
-        if not measurements[#measurements].set_b and measurements[#measurements].set_a then -- Second point of the measurement; create a new one
+        if not measurements[#measurements].set_b and measurements[#measurements].set_a and dist < maxDist then -- Second point of the measurement; create a new one
             measurements[#measurements].pos_b = hitPosition
             measurements[#measurements].set_b = true
             measurements[#measurements].length = VecLength(VecSub(measurements[#measurements].pos_a, measurements[#measurements].pos_b))
             -- DebugPrint("Second measurement point set")
         end
 
-        if not measurements[#measurements].set_a then -- First point of the measurement
+        if not measurements[#measurements].set_a and dist < maxDist then -- First point of the measurement
             measurements[#measurements].pos_a = hitPosition
             measurements[#measurements].set_a = true 
             -- DebugPrint("First measurement point set")
         end
         
+    end
+
+    if #measurements > 0 and measurements[#measurements].set_a and not measurements[#measurements].set_b then
+        measurements[#measurements].pos_b = hitPosition
+        if dist < maxDist then
+            measurements[#measurements].length = VecLength(VecSub(measurements[#measurements].pos_a, measurements[#measurements].pos_b))
+        end
     end
 
     if InputPressed("n") then
@@ -92,26 +99,36 @@ function client.draw() -- Rendering
     for i = 1, #measurements do
 
         uiX, uiY, UIdist = UiWorldToPixel(VecLerp(measurements[i].pos_a, measurements[i].pos_b, 0.5)) -- Get the position of the text in the middle of the line
-
+        -- DebugPrint("X = " .. uiX)
+        -- DebugPrint("Y = " .. uiY)
+        -- DebugPrint("D = " .. UIdist)
         if  measurements[i].set_b then -- Final render of the measurements
-            DebugLine(measurements[i].pos_a, measurements[i].pos_b, 255, 0, 0, 1)
-            DebugCross(measurements[i].pos_a, 0, 255, 0, 1)
-            DebugCross(measurements[i].pos_b, 0, 0, 255, 1)
+            DebugLine(measurements[i].pos_a, measurements[i].pos_b, 1, 0, 0, 1)
+            DebugCross(measurements[i].pos_a, 0, 1, 0, 1)
+            DebugCross(measurements[i].pos_b, 0, 0, 1, 1)
         end
 
-        if measurements[i].set_a and measurements[i].set_b and UIdist > 0 then
-            
-            UiPush()
-                UiFont("bold.ttf", 24)
-                UiAlign("center middle")
-                UiTranslate(uiX, uiY)
-                UiText(string.format("%.2f m", measurements[i].length))           
-            UiPop()
+        if UIdist > 0 and measurements[i].set_a and measurements[i].length < maxDist then -- Measurement length label
+            if (not measurements[i].set_b and dist < maxDist) or measurements[i].set_b then
+                UiPush()
+                    UiFont("bold.ttf", 24)
+                    UiAlign("center middle")
+                    UiTranslate(uiX, uiY)
+                    if measurements[i].set_b then
+                        UiColor(1,1,1,1)
+                        UiTextOutline(0,0,0,5)
+                    end
+                    if not measurements[i].set_b then
+                        UiColor(1,1,1,0.3)
+                    end
+                    UiText(string.format("%.2f m", measurements[i].length))           
+                UiPop()
+            end
         end
         if not measurements[i].set_b and measurements[i].set_a and dist < maxDist then -- Real-time render of the measurements
-            DebugLine(measurements[i].pos_a, hitPosition, 255, 0, 0, 0.4)
-            DebugCross(measurements[i].pos_a, 0, 255, 0, 1)
-            DebugCross(hitPosition, 0, 0, 255, 1)
+            DebugLine(measurements[i].pos_a, hitPosition, 1, 0.1, 0.1, 0.4)
+            DebugCross(measurements[i].pos_a, 0, 1, 0, 1)
+            DebugCross(hitPosition, 0, 0, 1, 1)
         end
     end
 end
