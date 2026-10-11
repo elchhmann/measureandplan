@@ -1,5 +1,5 @@
 name = Simple Measure
-description = Measure distances between two objects. Use M to set both point, N to remove all measurements, RMB to remove last one and Shift to snap to voxels.
+description = Measure distances between two objects. Use M to set both points, N to remove all measurements, RMB to remove last one and Shift to snap to voxels.
 author = moose man
 tags = Tool
 version = 2
