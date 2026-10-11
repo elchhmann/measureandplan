@@ -39,7 +39,7 @@ function client.tick() -- Measurement math etc
         hitPosition = hitPositionSnapped
         DebugCross(hitPosition, 0, 0, 255, 1)
     end
-    -- DebugPrint(GetPlayerVelocity())
+    DebugPrint(GetPlayerVelocity())
     if InputPressed("m") then
 
         if #measurements == 0 then -- If there are no measurements, create the first one
@@ -90,19 +90,23 @@ function client.draw() -- Rendering
     
 
     for i = 1, #measurements do
+
+        uiX, uiY, UIdist = UiWorldToPixel(VecLerp(measurements[i].pos_a, measurements[i].pos_b, 0.5)) -- Get the position of the text in the middle of the line
+
         if  measurements[i].set_b then -- Final render of the measurements
             DebugLine(measurements[i].pos_a, measurements[i].pos_b, 255, 0, 0, 1)
             DebugCross(measurements[i].pos_a, 0, 255, 0, 1)
             DebugCross(measurements[i].pos_b, 0, 0, 255, 1)
         end
 
-        if measurements[i].set_a and measurements[i].set_b then
+        if measurements[i].set_a and measurements[i].set_b and UIdist > 0 then
+            
             UiPush()
                 UiFont("bold.ttf", 24)
-                uiX, uiY, dist = UiWorldToPixel(VecLerp(measurements[i].pos_a, measurements[i].pos_b, 0.5)) -- Get the position of the text in the middle of the line
                 UiAlign("center middle")
                 UiTranslate(uiX, uiY)
-                UiText(string.format("%.2f m", measurements[i].length))            UiPop()
+                UiText(string.format("%.2f m", measurements[i].length))           
+            UiPop()
         end
         if not measurements[i].set_b and measurements[i].set_a and dist < maxDist then -- Real-time render of the measurements
             DebugLine(measurements[i].pos_a, hitPosition, 255, 0, 0, 0.4)
