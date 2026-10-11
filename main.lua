@@ -95,7 +95,7 @@ function client.tick() -- Measurement math etc
         table.remove(measurements, #measurements)
     end
 
-    DebugPrint(#measurements)
+    -- DebugPrint(#measurements)
 end
 
 function client.draw() -- Rendering
