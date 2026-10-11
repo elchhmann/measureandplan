@@ -91,13 +91,11 @@ function client.tick() -- Measurement math etc
         -- DebugPrint("All measurements cleared")
     end
 
-    if InputPressed("rmb") then -- Cancel measurement
-        if measurements[#measurements].set_a and not measurements[#measurements].set_b then
-            measurements[#measurements].set_a = false
-        end
+    if InputPressed("rmb") then -- Cancel measurement / remove last one
+        table.remove(measurements, #measurements)
     end
 
-    -- DebugPrint(#measurements)
+    DebugPrint(#measurements)
 end
 
 function client.draw() -- Rendering
