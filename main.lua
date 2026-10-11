@@ -10,9 +10,19 @@ measurements = {
     set_a = false,
     pos_b = Vec(0, 0, 0),
     set_b = false,
-    lenght = nil
+    length = nil
 }
 
+function round(value, decimals)
+    local factor = 10 ^ decimals
+    local scaled = value * factor
+
+    if scaled >= 0 then
+        return math.floor(scaled + 0.5) / factor
+    else
+        return math.ceil(scaled - 0.5) / factor
+    end
+end
 
 function client.init()
     -- DebugPrint("init2")
@@ -23,7 +33,13 @@ function client.tick() -- Measurement math etc
     cameraDirection = TransformToParentVec(GetCameraTransform(), Vec(0, 0, -1)) -- Direction the camera is facing
     raycast, dist = QueryRaycast(origin, cameraDirection, maxDist) -- Raycast from the camera
     hitPosition = VecAdd(origin, VecScale(cameraDirection, dist)) -- Position where the raycast hits
+    hitPositionSnapped = Vec(round(hitPosition[1],1), round(hitPosition[2],1), round(hitPosition[3],1))
 
+    if InputDown("shift") and VecLength(GetPlayerVelocity()) < 0.1 then
+        hitPosition = hitPositionSnapped
+        DebugCross(hitPosition, 0, 0, 255, 1)
+    end
+    -- DebugPrint(GetPlayerVelocity())
     if InputPressed("m") then
 
         if #measurements == 0 then -- If there are no measurements, create the first one
@@ -32,7 +48,7 @@ function client.tick() -- Measurement math etc
                 set_a = false,
                 pos_b = nil,
                 set_b = false,
-                lenght = nil
+                length = nil
             })
             -- DebugPrint("First measurement created")
         end
@@ -43,7 +59,7 @@ function client.tick() -- Measurement math etc
                         set_a = false,
                         pos_b = nil,
                         set_b = false,
-                        lenght = nil
+                        length = nil
                     })
             -- DebugPrint("New measurement created")
         end
@@ -51,7 +67,7 @@ function client.tick() -- Measurement math etc
         if not measurements[#measurements].set_b and measurements[#measurements].set_a then -- Second point of the measurement; create a new one
             measurements[#measurements].pos_b = hitPosition
             measurements[#measurements].set_b = true
-            measurements[#measurements].lenght = VecLength(VecSub(measurements[#measurements].pos_a, measurements[#measurements].pos_b))
+            measurements[#measurements].length = VecLength(VecSub(measurements[#measurements].pos_a, measurements[#measurements].pos_b))
             -- DebugPrint("Second measurement point set")
         end
 
@@ -65,7 +81,7 @@ function client.tick() -- Measurement math etc
 
     if InputPressed("n") then
         measurements = {} -- Clear all measurements
-        DebugPrint("All measurements cleared")
+        -- DebugPrint("All measurements cleared")
     end
     -- DebugPrint(#measurements)
 end
@@ -86,7 +102,7 @@ function client.draw() -- Rendering
                 uiX, uiY, dist = UiWorldToPixel(VecLerp(measurements[i].pos_a, measurements[i].pos_b, 0.5)) -- Get the position of the text in the middle of the line
                 UiAlign("center middle")
                 UiTranslate(uiX, uiY)
-                UiText(string.format("%.2f m", measurements[i].lenght))            UiPop()
+                UiText(string.format("%.2f m", measurements[i].length))            UiPop()
         end
         if not measurements[i].set_b and measurements[i].set_a and dist < maxDist then -- Real-time render of the measurements
             DebugLine(measurements[i].pos_a, hitPosition, 255, 0, 0, 0.4)
