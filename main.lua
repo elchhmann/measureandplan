@@ -39,7 +39,7 @@ function client.tick() -- Measurement math etc
         hitPosition = hitPositionSnapped
         DebugCross(hitPosition, 0, 0, 255, 1)
     end
-    DebugPrint(GetPlayerVelocity())
+    -- DebugPrint(GetPlayerVelocity())
     if InputPressed("m") then
 
         if #measurements == 0 then -- If there are no measurements, create the first one
