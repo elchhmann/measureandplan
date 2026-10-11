@@ -5,6 +5,15 @@
 
 maxDist = 1000
 
+measurements = {
+    pos_a = Vec(0, 0, 0),
+    set_a = false,
+    pos_b = Vec(0, 0, 0),
+    set_b = false,
+    lenght = nil
+}
+
+
 function client.init()
     -- DebugPrint("init2")
 end
@@ -14,61 +23,76 @@ function client.tick() -- Measurement math etc
     cameraDirection = TransformToParentVec(GetCameraTransform(), Vec(0, 0, -1)) -- Direction the camera is facing
     raycast, dist = QueryRaycast(origin, cameraDirection, maxDist) -- Raycast from the camera
     hitPosition = VecAdd(origin, VecScale(cameraDirection, dist)) -- Position where the raycast hits
-    lenght = VecLength(VecSub(b, a)) -- Length of the line between points a and b
-    if not bSet and dist < maxDist then
-        b = hitPosition
-    end
 
-    if InputPressed("m") and dist < maxDist then
+    if InputPressed("m") then
 
-        if not bSet and aSet then -- Set point b
-            b = hitPosition
-            bSet = true
-            -- DebugPrint(lenght .. "m")
-            -- DebugPrint("b set")
-            -- DebugPrint(b)
-            -- Paint(b, 0.1, spraypaint)
+        if #measurements == 0 then -- If there are no measurements, create the first one
+            table.insert(measurements, {
+                pos_a = nil,
+                set_a = false,
+                pos_b = nil,
+                set_b = false,
+                lenght = nil
+            })
+            -- DebugPrint("First measurement created")
         end
 
-        if not aSet then -- Set point a
-            a = hitPosition
-            aSet = true
-            -- DebugPrint("a set")
-            -- DebugPrint(a)
-            -- Paint(a, 0.1, spraypaint)
+        if measurements[#measurements].set_b then
+            table.insert(measurements, {
+                        pos_a = nil,
+                        set_a = false,
+                        pos_b = nil,
+                        set_b = false,
+                        lenght = nil
+                    })
+            -- DebugPrint("New measurement created")
         end
+
+        if not measurements[#measurements].set_b and measurements[#measurements].set_a then -- Second point of the measurement; create a new one
+            measurements[#measurements].pos_b = hitPosition
+            measurements[#measurements].set_b = true
+            measurements[#measurements].lenght = VecLength(VecSub(measurements[#measurements].pos_a, measurements[#measurements].pos_b))
+            -- DebugPrint("Second measurement point set")
+        end
+
+        if not measurements[#measurements].set_a then -- First point of the measurement
+            measurements[#measurements].pos_a = hitPosition
+            measurements[#measurements].set_a = true 
+            -- DebugPrint("First measurement point set")
+        end
+        
     end
-    if InputPressed("n") then -- Reset the points
-        aSet = false
-        bSet = false
-        -- DebugPrint("reset")
+
+    if InputPressed("n") then
+        measurements = {} -- Clear all measurements
+        DebugPrint("All measurements cleared")
     end
-
- 
-
-
-    -- direction = Vecnormalize(VecSub(b, a))
+    -- DebugPrint(#measurements)
 end
 
 function client.draw() -- Rendering
-    if aSet and dist < maxDist then
-        UiPush()
-            UiFont("bold.ttf", 24)
-            uiX, uiY, dist = UiWorldToPixel(VecLerp(a, b, 0.5)) -- Get the position of the text in the middle of the line
-            UiAlign("center middle")
-            UiTranslate(uiX, uiY)
-            UiText(string.format("%.2f m", lenght))
-        UiPop()
-    end
-    if not bSet and aSet and dist < maxDist then -- Real-time render of the measurement
-        DebugLine(a, hitPosition, 255, 0, 0, 0.4)
-        DebugCross(a, 0, 255, 0, 1)
-        DebugCross(hitPosition, 0, 0, 255, 1)
-    end
+    
 
-    if (aSet and bSet) then -- Final render of the measurement
-        DebugLine(a, b, 255, 0, 0, 1)
-        DebugCross(a, 0, 255, 0, 1)
-        DebugCross(b, 0, 0, 255, 1)
+    for i = 1, #measurements do
+        if  measurements[i].set_b then -- Final render of the measurements
+            DebugLine(measurements[i].pos_a, measurements[i].pos_b, 255, 0, 0, 1)
+            DebugCross(measurements[i].pos_a, 0, 255, 0, 1)
+            DebugCross(measurements[i].pos_b, 0, 0, 255, 1)
+        end
+
+        if measurements[i].set_a and measurements[i].set_b then
+            UiPush()
+                UiFont("bold.ttf", 24)
+                uiX, uiY, dist = UiWorldToPixel(VecLerp(measurements[i].pos_a, measurements[i].pos_b, 0.5)) -- Get the position of the text in the middle of the line
+                UiAlign("center middle")
+                UiTranslate(uiX, uiY)
+                UiText(string.format("%.2f m", measurements[i].lenght))            UiPop()
+        end
+        if not measurements[i].set_b and measurements[i].set_a and dist < maxDist then -- Real-time render of the measurements
+            DebugLine(measurements[i].pos_a, hitPosition, 255, 0, 0, 0.4)
+            DebugCross(measurements[i].pos_a, 0, 255, 0, 1)
+            DebugCross(hitPosition, 0, 0, 255, 1)
+        end
+
     end
 end
