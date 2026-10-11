@@ -1,5 +1,5 @@
 name = Simple Measure
-description = Measure distances between two objects. Use M to set both point and N to remove the points.
+description = Measure distances between two objects. Use M to set both point, N to remove the points and Shift to snap.
 author = moose man
 tags = Tool
 version = 2
