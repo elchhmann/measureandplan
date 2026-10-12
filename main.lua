@@ -274,7 +274,7 @@ function client.draw() -- Rendering
             UiFont("bold.ttf", 24)
 
             UiTranslate(-400, -150)
-                if UiImageButton("button_line.png") then
+                if UiImageButton("/media/button_line.png") then
                     mode = "line"
                 end
             UiPush()
@@ -283,7 +283,7 @@ function client.draw() -- Rendering
             UiPop()
 
                 UiTranslate(200, 0)
-                if UiImageButton("button_rect.png") then
+                if UiImageButton("/media/button_rect.png") then
                     mode = "rect"
                 end
 
