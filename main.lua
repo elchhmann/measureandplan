@@ -68,6 +68,26 @@ function client.tick() -- Measurement math etc
     hitPosition = VecAdd(origin, VecScale(cameraDirection, dist)) -- Position where the raycast hits
     hitPositionSnapped = Vec(round(hitPosition[1],1), round(hitPosition[2],1), round(hitPosition[3],1))
 
+    -- shape = QueryAabbShapes(hitPosition, hitPosition)
+    -- DebugPrint(shape)
+    -- DrawShapeHighlight(shape[1], 0.5)
+    -- DrawShapeHighlight(shape[2], 0.2)
+    -- DrawShapeHighlight(shape[3], 0.1)
+    -- DebugCross(hitPosition)
+    
+    -- shapePos = GetShapeWorldTransform(shape)
+
+    _, bodyPos, _, body = QueryClosestPoint(hitPosition, 0.1)
+    -- DebugPrint("Body: " .. body)
+    -- DebugPrint("Position: " .. bodyPos[1] .. bodyPos[2] .. bodyPos[3])
+    DrawShapeHighlight(body, 0.5)
+    DebugPrint(GetShapeLocalTransform(body).pos[1] .. GetShapeLocalTransform(body).pos[2] .. GetShapeLocalTransform(body).pos[3])
+    DebugCross(Vec(GetShapeLocalTransform(body).pos[1], GetShapeLocalTransform(body).pos[2], GetShapeLocalTransform(body).pos[3]))
+    DebugCross(Vec(GetShapeWorldTransform(body).pos[1], GetShapeWorldTransform(body).pos[2], GetShapeWorldTransform(body).pos[3]))
+    -- DebugCross(Vec(round(bodyPos[1], 1), round(bodyPos[2], 1), round(bodyPos[3], 1)))
+
+
+
     if InputPressed(",") then
         menu = not menu
     end
