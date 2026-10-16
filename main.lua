@@ -4,6 +4,12 @@
 ---@diagnostic disable : lowercase-global
 
 
+KEY_NEW = "m"
+KEY_CANCEL = "rmb"
+KEY_MENU = ","
+KEY_SNAP = "shift"
+
+
 function maxName(deltas)
     local copy = { }
     local names = { "deltaX", "deltaY", "deltaZ" }
@@ -68,16 +74,16 @@ function client.tick() -- Measurement math etc
     hitPosition = VecAdd(origin, VecScale(cameraDirection, dist)) -- Position where the raycast hits
     hitPositionSnapped = Vec(round(hitPosition[1],1), round(hitPosition[2],1), round(hitPosition[3],1))
 
-    if InputPressed(",") then
+    if InputPressed(KEY_MENU) then
         menu = not menu
     end
 
-    if InputDown("shift") and VecLength(GetPlayerVelocity()) < 0.1 then
+    if InputDown(KEY_SNAP) and VecLength(GetPlayerVelocity()) < 0.1 then
         hitPosition = hitPositionSnapped
         DebugCross(hitPosition, 0, 0, 255, 1)
     end
 
-    if InputPressed("m") then
+    if InputPressed(KEY_NEW) then
 
         if #measurements == 0 then -- If there are no measurements, create the first one
             table.insert(measurements, {
@@ -121,14 +127,13 @@ function client.tick() -- Measurement math etc
         end
     end
 
-    if InputPressed("n") then
-        measurements = {} -- Clear all measurements
-    end
+    if InputPressed(KEY_CANCEL) then -- Removes last measurement
 
-    if InputPressed("rmb") then -- Cancel measurement / remove last one
-        table.remove(measurements, #measurements)
+        if #measurements > 0 and measurements[#measurements].set_a and not measurements[#measurements].set_b then
+            table.remove(measurements, #measurements)
+        end
     end
-
+    
 end
 
 function client.draw() -- Rendering
@@ -171,7 +176,7 @@ function client.draw() -- Rendering
         uiX, uiY, UIdist = UiWorldToPixel(VecLerp(measurements[i].pos_a, measurements[i].pos_b, 0.5)) -- Get the position of the text in the middle of the line
 
         if measurements[i].type == "rect" then
-            if orientation == horizontal then
+            if orientation == "horizontal" then
                 uiX, uiY, UIdist = UiWorldToPixel(VecLerp(measurements[i].pos_a, blevel, 0.5)) -- Get the position of the text in the middle of the line
             else
                 uiX, uiY, UIdist = UiWorldToPixel(VecLerp(measurements[i].pos_a, measurements[i].pos_b, 0.5))
@@ -290,6 +295,27 @@ function client.draw() -- Rendering
                 if UiImageButton("/media/button_line.png") then
                     mode = "line"
                 end
+
+            UiPush()
+                UiTranslate(800, 0)
+                if UiImageButton("/media/clear.png") then
+                    measurements = {} -- Clear all measurements
+                end
+                UiPush()
+                    UiTranslate(0, 80)
+                    UiText("Clear all")
+                UiPop()
+
+                UiTranslate(0, 300)
+                if UiImageButton("/media/revert.png") then
+                    table.remove(measurements, #measurements) -- Remove last measurement
+                end
+                UiPush()
+                    UiTranslate(0, 80)
+                    UiText("Clear last")
+                UiPop()
+
+            UiPop()
             UiPush()
                 UiTranslate(0, 80)
                 UiText("Line")
