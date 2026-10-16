@@ -148,7 +148,7 @@ function client.draw() -- Rendering
 
         if (dominantDelta[1] == "deltaX" and dominantDelta[2] == "deltaZ") or (dominantDelta[1] == "deltaZ" and dominantDelta[2] == "deltaX") then
             aprim = Vec(measurements[i].pos_b[1], measurements[i].pos_a[2], measurements[i].pos_a[3]) -- a'(xb, ya, za)
-            bprim = Vec(measurements[i].pos_a[1], measurements[i].pos_b[2], measurements[i].pos_b[3]) -- b'(xa, ya, zb)
+            bprim = Vec(measurements[i].pos_a[1], measurements[i].pos_a[2], measurements[i].pos_b[3]) -- b'(xa, ya, zb)
 
             blevel = Vec(measurements[i].pos_b[1], measurements[i].pos_a[2], measurements[i].pos_b[3]) -- b but with the y coordinate of a (same level)
 
@@ -163,8 +163,7 @@ function client.draw() -- Rendering
         end
 
 
-        -- DebugCross(aprim, 0, 1, 1) -- cyan
-        -- DebugCross(bprim, 1, 1, 0) -- yellow
+        
 
         dimensionx = VecLength(VecSub(measurements[i].pos_a, bprim))
         dimensiony = VecLength(VecSub(measurements[i].pos_a, aprim))
@@ -180,14 +179,21 @@ function client.draw() -- Rendering
         end
         
         if  measurements[i].set_b then -- Final render of the measurements
+        
             DebugCross(measurements[i].pos_a, 0, 1, 0, 1)
-            DebugCross(measurements[i].pos_b, 0, 0, 1, 1)
 
             if measurements[i].type == "line" then
                 DebugLine(measurements[i].pos_a, measurements[i].pos_b, 1, 0, 0, 1)
+                DebugCross(measurements[i].pos_b, 0, 0, 1, 1)
             end
 
             if measurements[i].type == "rect" then
+
+                DebugCross(blevel, 0, 0, 1, 1)
+
+                DebugCross(aprim, 0, 1, 1) -- cyan
+                DebugCross(bprim, 1, 1, 0) -- yellow
+
                 if orientation == "horizontal" then
                     DebugLine(measurements[i].pos_a, aprim, 1, 0, 0, 1) -- From a(xa, ya, za) to  a'(xb, ya, za)
                     DebugLine(measurements[i].pos_a, bprim, 1, 0, 0, 1) -- From a(xa, ya, za) to  b'(xa, ya, zb)
@@ -231,14 +237,21 @@ function client.draw() -- Rendering
         end
         
         if not measurements[i].set_b and measurements[i].set_a and dist < maxDist then -- Real-time render of the measurements
+        
             DebugCross(measurements[i].pos_a, 0, 1, 0, 1)
-            DebugCross(hitPosition, 0, 0, 1, 1)
 
             if measurements[i].type == "line" then
                 DebugLine(measurements[i].pos_a, hitPosition, 1, 0.1, 0.1, 0.4)
+                DebugCross(hitPosition, 0, 0, 1, 1)
             end
 
             if measurements[i].type == "rect" then
+
+                DebugCross(blevel, 0, 0, 1, 1)
+
+                DebugCross(aprim, 0, 1, 1) -- cyan
+                DebugCross(bprim, 1, 1, 0) -- yellow
+
                 if orientation == "horizontal" then
                     DebugLine(measurements[i].pos_a, aprim, 1, 0.1, 0.1, 0.4) -- From a(xa, ya, za) to  a'(xb, ya, za)
                     DebugLine(measurements[i].pos_a, bprim, 1, 0.1, 0.1, 0.4) -- From a(xa, ya, za) to  b'(xa, ya, zb)
