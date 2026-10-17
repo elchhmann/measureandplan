@@ -84,7 +84,6 @@ function client.tick() -- Measurement math etc
     end
 
     if InputPressed(KEY_NEW) then
-
         if #measurements == 0 then -- If there are no measurements, create the first one
             table.insert(measurements, {
                 pos_a = nil,
@@ -117,36 +116,30 @@ function client.tick() -- Measurement math etc
             measurements[#measurements].pos_a = hitPosition
             measurements[#measurements].set_a = true 
         end
-        
     end
 
     if #measurements > 0 and measurements[#measurements].set_a and not measurements[#measurements].set_b then
         measurements[#measurements].pos_b = hitPosition
+
         if dist < maxDist then
             measurements[#measurements].length = VecLength(VecSub(measurements[#measurements].pos_a, measurements[#measurements].pos_b))
         end
     end
 
-    if InputPressed(KEY_CANCEL) then -- Removes last measurement
+    if InputPressed(KEY_CANCEL) then -- Cancel current measurement
 
         if #measurements > 0 and measurements[#measurements].set_a and not measurements[#measurements].set_b then
             table.remove(measurements, #measurements)
         end
     end
-    
 end
 
 function client.draw() -- Rendering
-    
     for i = 1, #measurements do
-
-        
 
         deltaX = math.abs(measurements[i].pos_a[1] - measurements[i].pos_b[1])
         deltaY = math.abs(measurements[i].pos_a[2] - measurements[i].pos_b[2])
         deltaZ = math.abs(measurements[i].pos_a[3] - measurements[i].pos_b[3])
-
-        
 
         local dominantDelta = maxName { deltaX, deltaY, deltaZ }
         -- DebugPrint(dominantDelta)
@@ -167,9 +160,6 @@ function client.draw() -- Rendering
             orientation = "vertical"
         end
 
-
-        
-
         dimensionx = VecLength(VecSub(measurements[i].pos_a, bprim))
         dimensiony = VecLength(VecSub(measurements[i].pos_a, aprim))
         
@@ -184,7 +174,6 @@ function client.draw() -- Rendering
         end
         
         if  measurements[i].set_b then -- Final render of the measurements
-        
             DebugCross(measurements[i].pos_a, 0, 1, 0, 1)
 
             if measurements[i].type == "line" then
@@ -213,7 +202,6 @@ function client.draw() -- Rendering
                     DebugLine(measurements[i].pos_b, bprim, 1, 0, 0, 1) -- From b(xb, yb, zb) to  b'(xa, ya, zb)
                 end
             end
-
         end
 
         if UIdist > 0 and measurements[i].set_a and measurements[i].length < maxDist then -- Measurement length label
@@ -235,14 +223,12 @@ function client.draw() -- Rendering
                     -- DebugPrint(measurements[i].type)
                     if measurements[i].type == "rect" then
                        UiText(string.format("%.2f m x %.2f m", dimensionx, dimensiony))
-                    end
-                              
+                    end     
                 UiPop()
             end
         end
         
         if not measurements[i].set_b and measurements[i].set_a and dist < maxDist then -- Real-time render of the measurements
-        
             DebugCross(measurements[i].pos_a, 0, 1, 0, 1)
 
             if measurements[i].type == "line" then
@@ -251,7 +237,6 @@ function client.draw() -- Rendering
             end
 
             if measurements[i].type == "rect" then
-
                 DebugCross(blevel, 0, 0, 1, 1)
 
                 DebugCross(aprim, 0, 1, 1) -- cyan
@@ -288,7 +273,6 @@ function client.draw() -- Rendering
         UiPop()
 
         UiPush()
-
             UiFont("bold.ttf", 24)
 
             UiTranslate(-400, -150)
@@ -301,6 +285,7 @@ function client.draw() -- Rendering
                 if UiImageButton("/media/clear.png") then
                     measurements = {} -- Clear all measurements
                 end
+
                 UiPush()
                     UiTranslate(0, 80)
                     UiText("Clear all")
@@ -310,12 +295,13 @@ function client.draw() -- Rendering
                 if UiImageButton("/media/revert.png") then
                     table.remove(measurements, #measurements) -- Remove last measurement
                 end
+
                 UiPush()
                     UiTranslate(0, 80)
                     UiText("Clear last")
                 UiPop()
-
             UiPop()
+
             UiPush()
                 UiTranslate(0, 80)
                 UiText("Line")
